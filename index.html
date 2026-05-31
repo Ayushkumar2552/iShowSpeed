@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ishowSpeed — Typing & Focus Tracker</title>
+<link rel="stylesheet" href="sstyle.css"/>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">i</div>
+    <div class="logo-text">ishow<span>Speed</span></div>
+  </div>
+  <span class="badge">v1.0 · Built for fun</span>
+</header>
+
+<main>
+  <div class="hero-text">
+    <h1>How fast is your <span>developer brain?</span></h1>
+    <p>Test your typing speed, reading comprehension & focus. Share your results on LinkedIn.</p>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="tab active" onclick="switchMode('typing')">Typing Speed</button>
+    <button class="tab" onclick="switchMode('reading')">Reading Speed</button>
+    <button class="tab" onclick="switchMode('focus')">Focus Mode</button>
+  </div>
+
+  <!-- TYPING MODE -->
+  <div class="mode-panel active" id="mode-typing">
+    <div class="stats-row">
+      <div class="stat-card accent-purple">
+        <div class="stat-val" id="wpm-stat">0</div>
+        <div class="stat-label">WPM</div>
+      </div>
+      <div class="stat-card accent-teal">
+        <div class="stat-val" id="acc-stat">100%</div>
+        <div class="stat-label">Accuracy</div>
+      </div>
+      <div class="stat-card accent-amber">
+        <div class="stat-val" id="correct-stat">0</div>
+        <div class="stat-label">Correct words</div>
+      </div>
+      <div class="stat-card accent-red">
+        <div class="stat-val" id="errors-stat">0</div>
+        <div class="stat-label">Errors</div>
+      </div>
+    </div>
+
+    <div class="difficulty-row">
+      <button class="diff-btn active" onclick="setDiff('easy', this)">Easy</button>
+      <button class="diff-btn" onclick="setDiff('medium', this)">Medium</button>
+      <button class="diff-btn" onclick="setDiff('hard', this)">Hard (code)</button>
+    </div>
+
+    <div class="challenge-box" id="challenge-box"></div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="type-progress"></div>
+    </div>
+
+    <div class="type-area">
+      <textarea id="type-input" placeholder="Click here and start typing the text above..." rows="3" disabled></textarea>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary" onclick="startTyping()">Start</button>
+      <button class="btn btn-ghost" onclick="resetTyping()">Reset</button>
+      <div class="timer-display" id="type-timer">60s</div>
+    </div>
+
+    <div class="result-panel" id="typing-result">
+      <h2>Test complete!</h2>
+      <p class="subtitle">Here's how you did</p>
+      <div id="rank-badge-wrap"></div>
+      <div class="result-grid">
+        <div class="result-stat">
+          <div class="val" id="r-wpm" style="color:var(--accent)">—</div>
+          <div class="lbl">WPM</div>
+        </div>
+        <div class="result-stat">
+          <div class="val" id="r-acc" style="color:var(--accent2)">—</div>
+          <div class="lbl">Accuracy</div>
+        </div>
+        <div class="result-stat">
+          <div class="val" id="r-correct" style="color:var(--accent3)">—</div>
+          <div class="lbl">Correct</div>
+        </div>
+        <div class="result-stat">
+          <div class="val" id="r-errors" style="color:var(--danger)">—</div>
+          <div class="lbl">Errors</div>
+        </div>
+      </div>
+      <div class="share-row">
+        <button class="btn btn-primary" onclick="copyResult()">Copy result to share</button>
+        <button class="btn btn-ghost" onclick="resetTyping()">Try again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- READING MODE -->
+  <div class="mode-panel" id="mode-reading">
+    <div class="stats-row">
+      <div class="stat-card accent-purple">
+        <div class="stat-val" id="read-wpm">—</div>
+        <div class="stat-label">Reading WPM</div>
+      </div>
+      <div class="stat-card accent-teal">
+        <div class="stat-val" id="read-score">—</div>
+        <div class="stat-label">Quiz score</div>
+      </div>
+      <div class="stat-card accent-amber">
+        <div class="stat-val" id="read-time">—</div>
+        <div class="stat-label">Read time (s)</div>
+      </div>
+      <div class="stat-card accent-red">
+        <div class="stat-val" id="read-rank">—</div>
+        <div class="stat-label">Rank</div>
+      </div>
+    </div>
+
+    <div id="read-section">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Read the passage below, then click "Done Reading" when finished. A quiz will follow.</p>
+      <div class="read-para" id="read-para"></div>
+      <div class="controls">
+        <button class="btn btn-primary" id="read-start-btn" onclick="startReading()">Start reading</button>
+        <button class="btn btn-ghost" onclick="resetReading()">New passage</button>
+        <div class="timer-display" id="read-timer">—</div>
+      </div>
+    </div>
+
+    <div id="quiz-section" style="display:none;">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:12px;">Answer these comprehension questions:</p>
+      <div id="quiz-container"></div>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="submitQuiz()" id="submit-quiz-btn">Submit answers</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOCUS MODE -->
+  <div class="mode-panel" id="mode-focus">
+    <div class="stats-row">
+      <div class="stat-card accent-purple">
+        <div class="stat-val" id="focus-streak">0</div>
+        <div class="stat-label">Streak</div>
+      </div>
+      <div class="stat-card accent-teal">
+        <div class="stat-val" id="focus-correct">0</div>
+        <div class="stat-label">Correct</div>
+      </div>
+      <div class="stat-card accent-amber">
+        <div class="stat-val" id="focus-total">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card accent-red">
+        <div class="stat-val" id="focus-pct">—</div>
+        <div class="stat-label">Hit rate</div>
+      </div>
+    </div>
+
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Type only the highlighted word as fast as possible. Tests focus & selective attention.</p>
+
+    <div class="challenge-box" id="focus-display" style="font-size:15px;line-height:2;"></div>
+
+    <input type="text" id="focus-input" placeholder="Type the highlighted word..."
+      style="width:100%;margin:12px 0;padding:12px 16px;background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:16px;outline:none;font-family:monospace;"
+      disabled/>
+
+    <div class="controls">
+      <button class="btn btn-primary" onclick="startFocus()">Start</button>
+      <button class="btn btn-ghost" onclick="resetFocus()">Reset</button>
+      <div class="timer-display" id="focus-timer">60s</div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Keystroke heatmap</p>
+      <div class="heatmap" id="heatmap"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Built with HTML, CSS &amp; JavaScript &mdash; no frameworks, no libraries &mdash;
+  <a href="#">View source on GitHub</a>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
