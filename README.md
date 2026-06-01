@@ -29,7 +29,7 @@ A fun, fully interactive web app that tests three core developer skills — typi
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/devspeed.git
-cd devspeed
+cd ishowspeed
 open index.html
 ```
 
