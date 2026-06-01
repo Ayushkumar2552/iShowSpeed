@@ -28,7 +28,7 @@ A fun, fully interactive web app that tests three core developer skills — typi
 ## Getting Started
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/devspeed.git
+git clone https://github.com/YOUR_USERNAME/ishowspeed.git
 cd ishowspeed
 open index.html
 ```
